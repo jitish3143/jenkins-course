@@ -7,9 +7,10 @@ node {
 
     stage 'Artifactory configuration'
         rtGradle.tool = 'gradle' // Tool name from Jenkins configuration
-        rtGradle.deployer repo:'gradle-dev-local',  server: server
-        rtGradle.resolver repo:'gradle-dev', server: server
+        rtGradle.deployer repo:'gradle-dev-local',  server: server //this is the repo where we will publish our artifacts
+        rtGradle.resolver repo:'gradle-dev', server: server  // this is where we are getting dependencies from
 
+    //All the part below comes from jrog example on jfrog documentation
         stage('Config Build Info') {
             buildInfo.env.capture = true
             buildInfo.env.filter.addInclude("*")
@@ -19,6 +20,7 @@ node {
             rtGradle.usesPlugin = true // Artifactory plugin already defined in build script
         }
         stage('Exec Gradle') {
+            //the line below is important this is where we build
             rtGradle.run rootDir: "artifactory/", buildFile: 'build.gradle', tasks: 'clean artifactoryPublish', buildInfo: buildInfo
         }
         stage('Publish build info') {
